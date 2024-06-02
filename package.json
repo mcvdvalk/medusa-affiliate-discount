@@ -1,6 +1,6 @@
 {
   "name": "@rsc-labs/medusa-affiliate-discount",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Create affiliate discount to promote your products",
   "author": "RSC Labs (https://rsoftcon.com)",
   "license": "MIT",
@@ -24,7 +24,7 @@
     "prepare": "cross-env NODE_ENV=production npm run build:server && medusa-admin bundle"
   },
   "dependencies": {
-    "@medusajs/admin": "^7.1.9",
+    "@medusajs/admin": "^7.1.12",
     "@medusajs/ui": "2.4.3",
     "@medusajs/icons": "1.2.1",
     "@tanstack/react-query": "4.22",
