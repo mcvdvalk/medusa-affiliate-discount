@@ -16,26 +16,30 @@ import type {
   } from "@medusajs/medusa"
 import AffiliateDiscountService from "../../../services/affiliateDiscount";
   
-export const POST = async (
+interface RequestBody {
+    customerId: string;
+    discountId: string;
+    commission: number;
+  }
+  
+  export const POST = async (
     req: MedusaRequest,
     res: MedusaResponse
-) => {
-    const customerId = req.body.customerId;
-    const discountId = req.body.discountId;
-    const commission = req.body.commission;
+  ) => {
+    const { customerId, discountId, commission } = req.body as { customerId: string; discountId: string; commission: number };
     if (customerId && discountId && commission) {
-        const affiliateDiscountService: AffiliateDiscountService = req.scope.resolve('affiliateDiscountService');
-        try {
-            const result = await affiliateDiscountService.createAffiliateDiscount(customerId, discountId, commission);
-            res.status(201).json(result); 
-        } catch (e) {
-            res.status(400).json({
-                message: e.message
-            })
-        }
-    } else {
+      const affiliateDiscountService: AffiliateDiscountService = req.scope.resolve('affiliateDiscountService');
+      try {
+        const result = await affiliateDiscountService.createAffiliateDiscount(customerId, discountId, commission);
+        res.status(201).json(result); 
+      } catch (e) {
         res.status(400).json({
-            message: `CustomerId or DiscountId or Commission is not passed`
+          message: e.message
         })
+      }
+    } else {
+      res.status(400).json({
+        message: `CustomerId or DiscountId or Commission is not passed`
+      })
     }
-}
+  }
