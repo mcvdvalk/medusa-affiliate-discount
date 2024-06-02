@@ -11,7 +11,7 @@
  */
 
 import type { WidgetConfig, CustomerDetailsWidgetProps } from "@medusajs/admin"
-import { Container, useToggleState, Table, Button, Heading, DropdownMenu, IconButton, clx, usePrompt, Select, FocusModal, Input, useToast, Toaster} from "@medusajs/ui"
+import { Container, useToggleState, Table, Button, Heading, DropdownMenu, IconButton, clx, usePrompt, Select, FocusModal, Input } from "@medusajs/ui"
 import { useForm, Controller, Control, UseFormRegister } from "react-hook-form"
 
 import {
@@ -57,8 +57,6 @@ const getErrorMessage = (error: any) => {
 }
 
 const AffilateDiscountsTableActions = ({ affiliateDiscountId }: { affiliateDiscountId: string }) => {
-  const { toast } = useToast()
-
   const prompt = usePrompt();
   const { mutateAsync } = useAdminCustomDelete<{}>
   (
@@ -81,7 +79,7 @@ const AffilateDiscountsTableActions = ({ affiliateDiscountId }: { affiliateDisco
       await mutateAsync(undefined, {
         onSuccess: ({ response }) => {
           if (response.status == 200) {
-            toast({
+            console.log({
               title: "Error",
               description: "Your affiliate discount has been deleted",
               variant: "success",
@@ -90,7 +88,7 @@ const AffilateDiscountsTableActions = ({ affiliateDiscountId }: { affiliateDisco
           }
 
           if (response.status != 200) {
-            toast({
+            console.log({
               title: "Error",
               description: "Failed to delete affiliate discount",
               variant: "error",
@@ -100,7 +98,7 @@ const AffilateDiscountsTableActions = ({ affiliateDiscountId }: { affiliateDisco
         },
         onError( error ) {
           const realError = getErrorMessage(error);
-          toast({
+          console.log({
             title: "Failed",
             description: realError,
             variant: "error",
@@ -109,7 +107,7 @@ const AffilateDiscountsTableActions = ({ affiliateDiscountId }: { affiliateDisco
         },
       })
     } catch (e) {
-      toast({
+      console.log({
         title: "Error",
         description: "Failed to delete affiliate discount",
         variant: "error",
@@ -347,8 +345,7 @@ type AdminAffiliateDiscountPostReq = {
 }
 
 const CreateAffDiscForm = ({ customerId } : { customerId: string }) => {
-  const { toast } = useToast();
-
+  
   const {
     state: modalState,
     open: openModal,
@@ -375,7 +372,7 @@ const CreateAffDiscForm = ({ customerId } : { customerId: string }) => {
 
   const onSubmit = (newDiscount: NewAffiliateDiscountFormType) => {
     if (!newDiscount.commission || !newDiscount.customerId || !newDiscount.discountId || !validateCommission(newDiscount.commission)) {
-      toast({
+      console.log({
         title: "Failed",
         description: "Values provided in fields are not correct",
         variant: "error",
@@ -391,7 +388,7 @@ const CreateAffDiscForm = ({ customerId } : { customerId: string }) => {
       }, {
       onSuccess: ( { response } ) => {
         if (response.status == 201) {
-          toast({
+          console.log({
             title: "Success",
             description: "Your affiliate discount has been published",
             variant: "success",
@@ -401,7 +398,7 @@ const CreateAffDiscForm = ({ customerId } : { customerId: string }) => {
         }
 
         if (response.status != 201) {
-          toast({
+          console.log({
             title: "Failed",
             description: "Something went wrong. Please check values in fields.",
             variant: "error",
@@ -411,7 +408,7 @@ const CreateAffDiscForm = ({ customerId } : { customerId: string }) => {
       },
       onError( error ) {
         const realError = getErrorMessage(error);
-        toast({
+        console.log({
           title: "Failed",
           description: realError,
           variant: "error",
@@ -496,7 +493,6 @@ const CustomAssignDiscountWidget = (props: CustomerDetailsWidgetProps) => {
 
   return (
     <>
-    <Toaster/>
     <Container>
       <div className="flex items-center justify-between px-8 pt-6 pb-4">
         <Heading>Affiliate discounts</Heading>
