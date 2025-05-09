@@ -249,9 +249,11 @@ const DiscountList = ({control} : { control: Control<NewAffiliateDiscountFormTyp
       render={({ field: { onChange, value } }) => {
         return (
           <Select
-            size="small"
-              value={value}
-              onValueChange={onChange}
+            {...{
+              size: "small",
+              value: value,
+              onValueChange: onChange,
+            } as any}
           >
             <Select.Trigger>
               <Select.Value />
@@ -429,7 +431,7 @@ const CreateAffDiscForm = ({ customerId } : { customerId: string }) => {
 
   return (
     <>
-    <FocusModal open={modalState} onOpenChange={onModalStateChange}>
+    <FocusModal {...{ open: modalState, onOpenChange: onModalStateChange } as any}>
         <FocusModal.Trigger asChild>
           <Button variant="primary">Create New</Button>
         </FocusModal.Trigger>
