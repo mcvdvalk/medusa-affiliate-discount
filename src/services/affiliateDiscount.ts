@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-import { Customer, Discount, Product, TransactionBaseService } from "@medusajs/medusa"
+import { Customer, Discount, Product, TransactionBaseService, EventBusService } from "@medusajs/medusa"
 import { AffiliateDiscount } from "../models/affiliate-discount";
 
 type AffiliateDiscountResult = {
@@ -31,6 +31,12 @@ export type AdjustmentItemType = {
 }
 
 class AffiliateDiscountService extends TransactionBaseService {
+  protected readonly eventBusService_: EventBusService;
+
+  constructor(container) {
+    super(container);
+    this.eventBusService_ = container.eventBusService;
+  }
 
   async getAffiliateDiscountsByCustomerId(customerId: string) : Promise<AffiliateDiscountResult[]> {
 
@@ -133,20 +139,29 @@ class AffiliateDiscountService extends TransactionBaseService {
     newEntry.earnings = 0;
     newEntry.commission = commission;
     newEntry.currency_code = discount.regions[0].currency_code;
-    const result = await this.activeManager_.getRepository(AffiliateDiscount).save(newEntry);
 
+    console.log("[AffiliateDiscountService] Preparing to save new affiliate discount entry.");
+    const result = await this.activeManager_.getRepository(AffiliateDiscount).save(newEntry);
+    console.log("[AffiliateDiscountService] AffiliateDiscount entry saved, ID:", result.id);
+
+    // Emit event after successful creation
     const eventData = {
       affiliateDiscountId: result.id,
-      customerId: result.customer.id, 
-      customerEmail: result.customer.email, 
+      customerId: result.customer.id,
+      customerEmail: result.customer.email,
       customerFirstName: result.customer.first_name,
-      discountId: result.discount.id, 
+      discountId: result.discount.id,
       discountCode: result.discount.code,
     };
-    // @ts-ignore
-    console.log("Emitting affiliate.discount.created with data:", eventData);
-    // @ts-ignore
-    await this.eventBusService_.emit("affiliate.discount.created", eventData);
+    console.log("[AffiliateDiscountService] Event data prepared:", eventData);
+
+    try {
+      console.log("[AffiliateDiscountService] Attempting to emit 'affiliate.discount.created' event...");
+      await this.eventBusService_.emit("affiliate.discount.created", eventData);
+      console.log("[AffiliateDiscountService] Event 'affiliate.discount.created' emitted successfully.");
+    } catch (error) {
+      console.error("[AffiliateDiscountService] CRITICAL: Failed to emit 'affiliate.discount.created' event:", error);
+    }
 
     return {
       id: result.id,
