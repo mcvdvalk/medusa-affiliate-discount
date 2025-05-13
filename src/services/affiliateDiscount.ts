@@ -134,6 +134,20 @@ class AffiliateDiscountService extends TransactionBaseService {
     newEntry.commission = commission;
     newEntry.currency_code = discount.regions[0].currency_code;
     const result = await this.activeManager_.getRepository(AffiliateDiscount).save(newEntry);
+
+    const eventData = {
+      affiliateDiscountId: result.id,
+      customerId: result.customer.id, 
+      customerEmail: result.customer.email, 
+      customerFirstName: result.customer.first_name,
+      discountId: result.discount.id, 
+      discountCode: result.discount.code,
+    };
+    // @ts-ignore
+    console.log("Emitting affiliate.discount.created with data:", eventData);
+    // @ts-ignore
+    await this.eventBusService_.emit("affiliate.discount.created", eventData);
+
     return {
       id: result.id,
       customerId: result.customer.id,
